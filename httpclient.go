@@ -32,12 +32,18 @@ func Do(request Request) (response string, err error) {
 	}
 	sortedHeaders[fhttp.HeaderOrderKey] = orderKeys
 
-	proxyURL, err := url.Parse(request.Proxy)
 	tr := &fhttp.Transport{
-		Proxy: fhttp.ProxyURL(proxyURL),
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: true,
 		},
+	}
+
+	if request.Proxy != "" {
+		if proxyURL, err := url.Parse(request.Proxy); err == nil {
+			tr.Proxy = fhttp.ProxyURL(proxyURL)
+		} else {
+			return response, err
+		}
 	}
 
 	if err != nil {
@@ -46,7 +52,10 @@ func Do(request Request) (response string, err error) {
 
 	client := &fhttp.Client{
 		Transport: tr,
-		Jar:       request.Jar,
+	}
+
+	if request.Jar != nil {
+		client.Jar = request.Jar
 	}
 
 	if request.Timeout > 0 {

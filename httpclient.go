@@ -78,11 +78,11 @@ func Do(request Request) (response string, err error) {
 	case "gzip":
 		gzReader, err := gzip.NewReader(resp.Body)
 		if err != nil {
-			return
+			return response, err
 		}
 		defer gzReader.Close()
 		if _, err = io.Copy(&sb, gzReader); err != nil {
-			return
+			return response, err
 		}
 	default:
 		_, err = io.Copy(&sb, resp.Body)

@@ -82,7 +82,6 @@ func Do(request Request) (response string, err error) {
 	defer resp.Body.Close()
 	sb := strings.Builder{}
 
-	// ToDo: use readResponse
 	switch resp.Header.Get("Content-Encoding") {
 	case "gzip":
 		gzReader, err := gzip.NewReader(resp.Body)

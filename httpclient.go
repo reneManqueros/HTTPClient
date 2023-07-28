@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func Do(request Request) (response string, err error) {
+func DoRequest(request Request) (resp *fhttp.Response, err error) {
 	if request.Host == "" {
 		if u, err := url.Parse(request.URL); err == nil {
 			request.Host = u.Host
@@ -42,7 +42,7 @@ func Do(request Request) (response string, err error) {
 		if proxyURL, err := url.Parse(request.Proxy); err == nil {
 			tr.Proxy = fhttp.ProxyURL(proxyURL)
 		} else {
-			return response, err
+			return
 		}
 	}
 
@@ -74,11 +74,11 @@ func Do(request Request) (response string, err error) {
 	req.Host = request.Host
 	req.Header = sortedHeaders
 
-	resp, err := client.Do(req)
-	if err != nil {
-		return
-	}
+	return client.Do(req)
+}
 
+func Do(request Request) (response string, err error) {
+	resp, err := DoRequest(request)
 	defer resp.Body.Close()
 	sb := strings.Builder{}
 

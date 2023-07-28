@@ -39,7 +39,7 @@ func DoRequest(request Request) (resp *fhttp.Response, err error) {
 	}
 
 	if request.Proxy != "" {
-		if proxyURL, err := url.Parse(request.Proxy); err == nil {
+		if proxyURL, thisErr := url.Parse(request.Proxy); thisErr == nil {
 			tr.Proxy = fhttp.ProxyURL(proxyURL)
 		} else {
 			return

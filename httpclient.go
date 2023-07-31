@@ -79,7 +79,11 @@ func DoRequest(request Request) (resp *fhttp.Response, err error) {
 
 func Do(request Request) (response string, err error) {
 	resp, err := DoRequest(request)
-	defer resp.Body.Close()
+	defer func() {
+		if resp != nil && resp.Body != nil {
+			resp.Body.Close()
+		}
+	}()
 	sb := strings.Builder{}
 
 	switch resp.Header.Get("Content-Encoding") {

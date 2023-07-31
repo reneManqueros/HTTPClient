@@ -79,11 +79,10 @@ func DoRequest(request Request) (resp *fhttp.Response, err error) {
 
 func Do(request Request) (response string, err error) {
 	resp, err := DoRequest(request)
-	defer func() {
-		if resp != nil && resp.Body != nil {
-			resp.Body.Close()
-		}
-	}()
+	if resp == nil || resp.Body == nil {
+		return "", err
+	}
+
 	sb := strings.Builder{}
 
 	switch resp.Header.Get("Content-Encoding") {
@@ -100,5 +99,6 @@ func Do(request Request) (response string, err error) {
 		_, err = io.Copy(&sb, resp.Body)
 	}
 	response = sb.String()
+	resp.Body.Close()
 	return
 }
